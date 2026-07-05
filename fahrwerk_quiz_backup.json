@@ -1,0 +1,369 @@
+{
+  "results": [
+    {
+      "n": "Fabio",
+      "s": 326,
+      "m": 330,
+      "t": 227,
+      "d": "2026-07-04T19:37:22.041Z",
+      "a": [
+        {
+          "id": "q_1783179498289",
+          "category": "Operação",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 7.867
+        },
+        {
+          "id": "q_1783177772656",
+          "category": "Qualidade",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 12.867
+        },
+        {
+          "id": "q_1783178491856",
+          "category": "Segurança",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 7.449
+        },
+        {
+          "id": "q_1783140038463",
+          "category": "Qualidade",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 12.616
+        },
+        {
+          "id": "q_1783176109643",
+          "category": "Nova categoria",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 3.782
+        },
+        {
+          "id": "q_1783137420926",
+          "category": "Qualidade",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 4.4
+        },
+        {
+          "id": "q_1783137534577",
+          "category": "Operação",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 3.383
+        },
+        {
+          "id": "q_1783172064582",
+          "category": "Operação",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 9.034
+        },
+        {
+          "id": "q_1783179337507",
+          "category": "Segurança",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 3.599
+        },
+        {
+          "id": "q_1783179724808",
+          "category": "Segurança",
+          "weight": 30,
+          "correct": true,
+          "timeSpent": 4.215
+        },
+        {
+          "id": "q_1783138068163",
+          "category": "Operação",
+          "weight": 20,
+          "correct": true,
+          "timeSpent": 3.049
+        },
+        {
+          "id": "q_1783141069411",
+          "category": "Segurança",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 4.102
+        },
+        {
+          "id": "q_1783171599295",
+          "category": "Operação",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 7.382
+        },
+        {
+          "id": "q_1783177338056",
+          "category": "Operação",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 3.101
+        },
+        {
+          "id": "q_1783178817008",
+          "category": "Housekeeping",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 8.149
+        },
+        {
+          "id": "q_1783175570643",
+          "category": "Operação",
+          "weight": 30,
+          "correct": true,
+          "timeSpent": 2.448
+        },
+        {
+          "id": "q_1783176908422",
+          "category": "Operação",
+          "weight": 10,
+          "correct": true,
+          "timeSpent": 5.567
+        }
+      ],
+      "la": 2
+    }
+  ],
+  "settings": {
+    "questionTime": 90,
+    "quizSize": 17,
+    "pin": "1948",
+    "monitorWhatsapp": "5512997652610"
+  },
+  "customQuestions": [
+    {
+      "id": "q_1783137420926",
+      "category": "Qualidade",
+      "weight": 10,
+      "text": "Ao identificar uma peça com defeito no pré fahrwerk (NOK), qual é a ação correta?",
+      "options": [
+        "Montar e avisar os monitores",
+        "Montar e carimbar NOK na ficha",
+        "Trocar a peça, por uma com o mesmo código e OK. E avisar os monitores."
+      ],
+      "correct": 2
+    },
+    {
+      "id": "q_1783137534577",
+      "category": "Operação",
+      "weight": 10,
+      "text": "Freio a disco no eixo traseiro, vai em qual modelo de veiculo?",
+      "options": [
+        "Tera",
+        "Polo",
+        "Tera e Polo"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783138068163",
+      "category": "Operação",
+      "weight": 20,
+      "text": "Temos 4 modelos de escapamentos, BD, BP, BG... Qual modelo está faltando?",
+      "options": [
+        "BL",
+        "CB",
+        "CL"
+      ],
+      "correct": 2
+    },
+    {
+      "id": "q_1783140038463",
+      "category": "Qualidade",
+      "weight": 10,
+      "text": "No nosso quadro de Acompanhamento diário, onde colocamos V verde Ok e X vermelho Nok, para verificar nossos erros de operações no dia. Verificamos 4 itens, Chicote, Flexível, Liberação de WPK... Qual item está faltando?",
+      "options": [
+        "Alavanca",
+        "Leitura do BZD",
+        "Torque falso"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783141069411",
+      "category": "Segurança",
+      "weight": 10,
+      "text": "O uso da talha na operação do escapamento, é obrigatório?",
+      "options": [
+        "Não",
+        "Sim",
+        "É uma escolha do operador"
+      ],
+      "correct": 1
+    },
+    {
+      "id": "q_1783171599295",
+      "category": "Operação",
+      "weight": 10,
+      "text": "Na operação do tanque de combustível, lado esquerdo no pré Fahrwerk. Qual é a sequencia correta?",
+      "options": [
+        "Pegar o tanque de combustível e depois a tubulação de freio",
+        "Pegar a tubulação de freio e depois o tanque de combustível",
+        "Tanto faz"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783172064582",
+      "category": "Operação",
+      "weight": 10,
+      "text": "A ECU que conectamos na operação da gaiola, Qual é a função da ECU ?",
+      "options": [
+        "É responsável apenas pelos freios do veiculo",
+        "Controla toda parte eletrônica do veiculo",
+        "É responsável apenas pela emissão de gases"
+      ],
+      "correct": 1
+    },
+    {
+      "id": "q_1783175570643",
+      "category": "Operação",
+      "weight": 30,
+      "text": "Qual o total de apertos de torques feito por veiculo no Fahrwerk? Lembrando q o apontamento das porcas da torre de suspensão na gaiola, não conta como aperto de torque!",
+      "options": [
+        "41",
+        "43",
+        "45"
+      ],
+      "correct": 1
+    },
+    {
+      "id": "q_1783176109643",
+      "category": "Nova categoria",
+      "weight": 10,
+      "text": "Na operação fixação do tanque de combustível, lado direito. O aperto q fixa ao mesmo tempo a cinta do tanque, suporte do escapamento e chapa defletora , dificultando muitas vezes o seu aperto. Na IHM mostra a sua posição...Qual letra identifica a sua posição?",
+      "options": [
+        "A",
+        "B",
+        "F"
+      ],
+      "correct": 1
+    },
+    {
+      "id": "q_1783176908422",
+      "category": "Operação",
+      "weight": 10,
+      "text": "Na operação de fixação do quadro auxiliar, qual  o tipo de torque usado?",
+      "options": [
+        "Torque em ângulo",
+        "Torque simples",
+        "Os dois tipos de torques"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783177338056",
+      "category": "Operação",
+      "weight": 10,
+      "text": "Na ficha do Fahrwerk onde carimbamos a operação NOK, qual o ultimo item?",
+      "options": [
+        "Luva fixação escapamento",
+        "Coxim do motor",
+        "Alavanca de mudanças"
+      ],
+      "correct": 2
+    },
+    {
+      "id": "q_1783177772656",
+      "category": "Qualidade",
+      "weight": 10,
+      "text": "Qual é o nosso principal indicador de qualidade, e em tempo real, que temos em relação a qualidade do Fahrwerk?",
+      "options": [
+        "R2",
+        "R0",
+        "ZP8"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783178491856",
+      "category": "Segurança",
+      "weight": 10,
+      "text": "O uso de celular e fone de ouvido, durante o trabalho.",
+      "options": [
+        "É proibido",
+        "É permitido",
+        "Fica a escolha do operador"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783178817008",
+      "category": "Housekeeping",
+      "weight": 10,
+      "text": "O housekeeping do posto de trabalho, quem é o maior responsável?",
+      "options": [
+        "Monitor",
+        "Operador que esta no posto",
+        "O próximo operador do posto"
+      ],
+      "correct": 1
+    },
+    {
+      "id": "q_1783179337507",
+      "category": "Segurança",
+      "weight": 10,
+      "text": "O uso de EPIs no setor.",
+      "options": [
+        "É obrigatório",
+        "Não é obrigatório",
+        "É opcional"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783179498289",
+      "category": "Operação",
+      "weight": 10,
+      "text": "Trabalho padronizado significa:",
+      "options": [
+        "Fazer a operação do jeito mais rapido",
+        "Fazer do jeito que eu acho melhor",
+        "Fazer conforme a SAB"
+      ],
+      "correct": 2
+    },
+    {
+      "id": "q_1783179724808",
+      "category": "Segurança",
+      "weight": 30,
+      "text": "Em caso de acidente no setor, e precisar ligar para pedir a ambulância, qual numero de telefone deve ligar?",
+      "options": [
+        "3625 6555",
+        "3625 6990",
+        "3625 6666"
+      ],
+      "correct": 0
+    },
+    {
+      "id": "q_1783201874075",
+      "category": "Operação",
+      "weight": 30,
+      "text": "Na operação de fixação do amortecedor no eixo traseiro, no pré fahrwerk, existe 4 tipos de amortecedores. Qual amortecedor é usado no Tera TSI?",
+      "options": [
+        "13C",
+        "13AE",
+        "13A"
+      ],
+      "correct": 0
+    }
+  ],
+  "myAttempts": [
+    {
+      "name": "Fabio",
+      "date": "2026-07-04T19:23:32.594Z",
+      "score": 310
+    },
+    {
+      "name": "Fabio",
+      "date": "2026-07-04T19:35:04.461Z",
+      "score": 326
+    }
+  ]
+}
