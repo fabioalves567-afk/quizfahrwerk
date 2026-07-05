@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Desafio Fahrwerk</title>
+<style>
+  :root{
+    --vw-blue-dark:#001E50;
+    --vw-blue:#0040C1;
+    --gray:#1a1a2e;
+    --green:#00c853;
+    --yellow:#ffd600;
+    --red:#d50000;
+    --card-bg:#ffffff;
+    --bg:#eef1f7;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background:var(--bg);
+    color:var(--gray);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .app{width:100%; max-width:520px; min-height:100vh; background:var(--bg); display:flex; flex-direction:column;}
+  header.topbar{
+    background:linear-gradient(135deg, var(--vw-blue-dark), var(--vw-blue));
+    color:#fff; padding:16px 20px; display:flex; flex-direction:column; gap:2px;
+    position:sticky; top:0; z-index:10; box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header.topbar .title{font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px;}
+  header.topbar .sub{font-size:12px; opacity:.85; display:flex; justify-content:space-between;}
+  main{flex:1; padding:20px; display:flex; flex-direction:column; gap:16px;}
+  .card{
+    background:var(--card-bg); border-radius:12px; padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+  h1{font-size:22px; color:var(--vw-blue-dark); margin-bottom:6px;}
+  h2{font-size:17px; color:var(--vw-blue-dark); margin-bottom:10px;}
+  p{font-size:14px; line-height:1.5; color:#333;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:14px 18px; border-radius:10px; border:none; font-size:15px; font-weight:600;
+    cursor:pointer; width:100%; transition:transform .1s, opacity .15s;
+  }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{background:var(--vw-blue); color:#fff;}
+  .btn-secondary{background:#e4e8f2; color:var(--vw-blue-dark);}
+  .btn-green{background:var(--green); color:#fff;}
+  .btn-yellow{background:var(--yellow); color:#1a1a2e;}
+  .btn-red{background:var(--red); color:#fff;}
+  .btn-dark{background:var(--gray); color:#fff;}
+  .btn-outline{background:#fff; color:var(--vw-blue); border:2px solid var(--vw-blue);}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  input[type=text], input[type=tel], textarea{
+    width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid #d5dae5;
+    font-size:15px; font-family:inherit; background:#fbfcfe;
+  }
+  input:focus, textarea:focus{outline:none; border-color:var(--vw-blue);}
+  textarea{resize:vertical; min-height:70px;}
+  .row{display:flex; gap:10px;}
+  .row > *{flex:1;}
+  .progress-wrap{background:#e4e8f2; border-radius:8px; height:8px; overflow:hidden; margin:10px 0;}
+  .progress-bar{height:100%; background:var(--green); transition:width .3s;}
+  .qmeta{display:flex; justify-content:space-between; align-items:center; font-size:13px; color:#555; margin-bottom:8px;}
+  .timer{font-weight:700; color:var(--vw-blue-dark); font-size:16px;}
+  .timer.low{color:var(--red);}
+  .weight-tag{
+    display:inline-block; font-size:11px; font-weight:700; padding:3px 9px; border-radius:12px;
+    background:var(--vw-blue-dark); color:#fff;
+  }
+  .qtext{font-size:17px; font-weight:600; margin:14px 0 16px; color:var(--gray);}
+  .option{
+    display:block; width:100%; text-align:left; padding:14px 16px; margin-bottom:10px;
+    border-radius:10px; border:2px solid #d5dae5; background:#fff; font-size:14.5px;
+    cursor:pointer; color:var(--gray); transition:.15s;
+  }
+  .option:active{background:#eef1f7;}
+  .option.selected{border-color:var(--vw-blue); background:#eaf0ff;}
+  .score-pill{
+    display:inline-flex; align-items:center; gap:6px; background:var(--vw-blue-dark); color:#fff;
+    padding:6px 14px; border-radius:20px; font-size:13px; font-weight:700;
+  }
+  .kpi-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;}
+  .kpi-card{background:#f3f5fa; border-radius:10px; padding:14px; text-align:center;}
+  .kpi-card .val{font-size:26px; font-weight:800; color:var(--vw-blue-dark);}
+  .kpi-card .label{font-size:11px; color:#666; text-transform:uppercase; letter-spacing:.5px; margin-top:2px;}
+  .code-box{
+    background:#f3f5fa; border:1.5px dashed #b9c2d6; border-radius:10px; padding:12px;
+    font-family:monospace; font-size:11px; word-break:break-all; color:#333; max-height:100px; overflow-y:auto;
+  }
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--gray); color:#fff; padding:12px 20px; border-radius:10px; font-size:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,.25); z-index:999; opacity:0; transition:opacity .3s, bottom .3s; pointer-events:none;
+  }
+  .toast.show{opacity:1; bottom:40px;}
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.5); display:none;
+    align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{background:#fff; border-radius:14px; padding:0; width:100%; max-width:440px; max-height:85vh; overflow-y:auto;}
+  .modal-header{
+    display:flex; justify-content:space-between; align-items:center; padding:18px 20px;
+    border-bottom:1px solid #eee; position:sticky; top:0; background:#fff;
+  }
+  .modal-header h3{font-size:17px; color:var(--vw-blue-dark);}
+  .modal-close{background:none; border:none; font-size:22px; cursor:pointer; color:#888; line-height:1;}
+  .modal-body{padding:20px;}
+  .section-label{font-size:12px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:.5px; margin:16px 0 8px;}
+  .section-label:first-child{margin-top:0;}
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th, td{padding:8px 6px; text-align:left; border-bottom:1px solid #eee;}
+  th{color:#888; font-weight:700; font-size:11px; text-transform:uppercase;}
+  .rank-badge{
+    display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px;
+    border-radius:50%; background:var(--vw-blue); color:#fff; font-size:11px; font-weight:800;
+  }
+  .rank-badge.gold{background:#c99700;}
+  .rank-badge.silver{background:#8a8a8a;}
+  .rank-badge.bronze{background:#a0562e;}
+  .bar-row{display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px;}
+  .bar-label{width:120px; flex-shrink:0; color:#555; font-size:11.5px; line-height:1.3;}
+  .bar-track{flex:1; background:#e4e8f2; border-radius:6px; height:14px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:6px;}
+  .bar-pct{width:36px; text-align:right; font-weight:700; color:var(--vw-blue-dark);}
+  .hidden{display:none !important;}
+  .center{text-align:center;}
+  .mt8{margin-top:8px;} .mt12{margin-top:12px;} .mt16{margin-top:16px;} .mt20{margin-top:20px;}
+  .muted{color:#888; font-size:12.5px;}
+  .warn-box{background:#fff3e0; border-left:4px solid var(--yellow); padding:10px 14px; border-radius:8px; font-size:13px; color:#7a5c00;}
+  .gabarito-item{padding:10px 0; border-bottom:1px solid #eee; font-size:13px;}
+  .gabarito-item b{color:var(--green);}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <header class="topbar">
+    <div class="title">🏆 <span id="headerTitle">Desafio Fahrwerk</span></div>
+    <div class="sub"><span id="headerSub">Conhecimento em jogo</span><span id="clock">--:--:--</span></div>
+  </header>
+
+  <main id="main"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Modal: confirmação de envio -->
+<div class="modal-overlay" id="modalConfirmSend">
+  <div class="modal">
+    <div class="modal-header"><h3>Confirmar envio</h3><button class="modal-close" data-close="modalConfirmSend">×</button></div>
+    <div class="modal-body">
+      <p>Após enviar, não será mais possível alterar nenhuma resposta. Deseja confirmar o envio do seu Desafio Fahrwerk?</p>
+      <div class="row mt20">
+        <button class="btn btn-secondary" data-close="modalConfirmSend">Cancelar</button>
+        <button class="btn btn-green" id="btnConfirmSend">Confirmar envio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Backup padrão -->
+<div class="modal-overlay" id="modalBackup">
+  <div class="modal">
+    <div class="modal-header"><h3>💾 Backup do HUB</h3><button class="modal-close" data-close="modalBackup">×</button></div>
+    <div class="modal-body">
+      <div class="section-label">Armazenamento</div>
+      <div class="progress-wrap"><div class="progress-bar" id="storageBar" style="width:2%"></div></div>
+      <p class="muted" id="storageInfo">Calculando uso do localStorage...</p>
+
+      <div class="section-label">Exportar</div>
+      <button class="btn btn-dark mt8" id="btnExportJson">↓ Arquivo .json</button>
+      <button class="btn btn-primary mt8" id="btnExportDevice">📦 Salvar no dispositivo</button>
+
+      <div class="section-label">Restaurar</div>
+      <button class="btn btn-secondary mt8" id="btnRestoreFile">📁 De arquivo .json</button>
+      <button class="btn btn-secondary mt8" id="btnRestoreDevice">📦 Do dispositivo</button>
+      <input type="file" id="fileRestore" accept=".json" class="hidden">
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ======================= CONFIGURAÇÃO ======================= */
+  // >>> EDITE AQUI antes de publicar o link para os operadores <<<
+  const MONITOR_WHATSAPP_DEFAULT = "5512997652610"; // número padrão do monitor (fallback), formato 55DDDNUMERO
+  const STORAGE_KEY = "fahrwerk_quiz_v1";
+  const DEFAULT_QUESTION_TIME = 90; // segundos por pergunta (padrão, editável no painel do monitor)
+  const DEFAULT_QUIZ_SIZE = 18; // quantidade de perguntas por rodada (padrão, editável no painel do monitor)
+  const WEIGHT_OPTIONS = [
+    {v:5, label:"5 pts · Fácil"},
+    {v:10, label:"10 pts · Média"},
+    {v:20, label:"20 pts · Difícil"},
+    {v:30, label:"30 pts · Especial"}
+  ];
+
+  /* ======================= BANCO DE PERGUNTAS ======================= */
+  // weight: 5=fácil, 10=média, 20=difícil, 30=especial (crítica de segurança/qualidade)
+  const QUESTION_BANK = [
+    {id:"q10", category:"Processo Produtivo", weight:10,
+      text:"Freio a disco no eixo traseiro, vai em qual modelo de veículos ?",
+      options:["Polo","Tera","Polo e Tera"], correct:1},
+    {id:"q_1783263804236", category:"Qualidade", weight:10,
+      text:"Ao identificar uma peça com defeito, antes de montar, no Pré Fahrwerk, qual a ação correta?",
+      options:["Montar e avisar os monitores","Montar e carimbar NOK na ficha","Trocar por uma peça do mesmo código e OK, e avisar os monitores."], correct:2},
+    {id:"q_1783264429624", category:"Processo Produtivo", weight:30,
+      text:"Temos 4 modelos de escapamentos, BD, BP,BG... Qual modelo esta faltando?",
+      options:["BL","CB","CL"], correct:2},
+    {id:"q_1783264738817", category:"Qualidade", weight:10,
+      text:"No nosso quadro de Acompanhamento diário, onde colocamos V verde Ok e X vermelho Nok, para verificar nossos erros de operações no dia. Verificamos 4 itens, Chicote, Flexível, Liberação de WPK... Qual item está faltando?",
+      options:["Alavanca","Leitura BZD","Torque falso"], correct:0},
+    {id:"q_1783264848733", category:"Segurança", weight:30,
+      text:"O uso da talha na operação do escapamento, é obrigatório?",
+      options:["Não","Sim","É uma escolha do operador"], correct:1},
+    {id:"q_1783264987059", category:"Processo Produtivo", weight:20,
+      text:"Na operação do tanque de combustível, lado esquerdo no Pré Fahrwerk. Qual é a sequencia correta?",
+      options:["Pegar o tanque de combustível e depois a tubulação de freio","Pegar a tubulação de freio e depois o tanque de combustivel","Tanto faz"], correct:0},
+    {id:"q_1783265164251", category:"Processo Produtivo", weight:10,
+      text:"A ECU que conectamos na operação da gaiola, Qual é a função da ECU ?",
+      options:["É responsável apenas pelos freio do veiculo","Controla toda parte eletrônica do veiculo","É responsável apenas pelas emissões de gases"], correct:1},
+    {id:"q_1783265318807", category:"Processo Produtivo", weight:30,
+      text:"Qual o total de apertos de torques feito por veiculo no Fahrwerk? Lembrando q o apontamento das porcas da torre de suspensão na gaiola, não conta como aperto de torque!",
+      options:["41","43","45"], correct:1},
+    {id:"q_1783265680934", category:"Processo Produtivo", weight:30,
+      text:"Na operação fixação do tanque de combustível, lado direito. O aperto q fixa ao mesmo tempo a cinta do tanque, suporte do escapamento e chapa defletora , dificultando muitas vezes o seu aperto. Na IHM mostra a sua posição...Qual letra identifica a sua posição?",
+      options:["A","B","F"], correct:1},
+    {id:"q_1783265761792", category:"Processo Produtivo", weight:20,
+      text:"Na operação de fixação do quadro auxiliar, qual  o tipo de torque usado?",
+      options:["Torque em ângulo","Torque simples","Nenhum dos dois"], correct:0},
+    {id:"q_1783265877010", category:"Processo Produtivo", weight:10,
+      text:"Na ficha do Fahrwerk onde carimbamos a operação NOK, qual o ultimo item?",
+      options:["Luva de fixação do escapamento","Coxim do motor","Alavanca de mudanças"], correct:2},
+    {id:"q_1783265984851", category:"Processo Produtivo", weight:10,
+      text:"Qual é o nosso principal indicador de qualidade, e em tempo real, que temos em relação a qualidade do Fahrwerk?",
+      options:["R2","R0","ZP8"], correct:0},
+    {id:"q_1783266135086", category:"Segurança", weight:30,
+      text:"O uso de celular e fone de ouvido, durante o trabalho.",
+      options:["É proibido","É permitido","Fica a escolha do operador"], correct:0},
+    {id:"q_1783266244711", category:"Housekeeping", weight:30,
+      text:"O housekeeping do posto de trabalho, quem é o maior responsável?",
+      options:["Monitor","O operador que está no posto","O próximo operador do posto"], correct:1},
+    {id:"q_1783266401740", category:"Segurança", weight:10,
+      text:"O uso de EPIs no setor.",
+      options:["É obrigatório","Não é obrigatório","É opcional"], correct:0},
+    {id:"q_1783266494172", category:"Processo Produtivo", weight:20,
+      text:"Trabalho padronizado, significa ?",
+      options:["Fazer a operação do jeito mais rapido","Fazer do jeito que eu achar melhor","Fazer conforme a SAB"], correct:2},
+    {id:"q_1783266644842", category:"Segurança", weight:30,
+      text:"Em caso de acidente no setor, e precisar ligar para pedir a ambulância, qual numero de telefone deve ligar?",
+      options:["3625 6555","3625 6990","3625 6666"], correct:0},
+    {id:"q_1783266779936", category:"Processo Produtivo", weight:30,
+      text:"Na operação de fixação do amortecedor no eixo traseiro, no pré fahrwerk, existe 4 tipos de amortecedores. Qual amortecedor é usado no Tera TSI?",
+      options:["13c","13AE","13A"], correct:0}
+  ];
+
+  /* ======================= ESTADO ======================= */
+  let state = load() || { results: [] };
+  if(!state.settings){
+    state.settings = { questionTime: DEFAULT_QUESTION_TIME, quizSize: DEFAULT_QUIZ_SIZE, pin: "1948", monitorWhatsapp: "5512997652610" };
+  }
+  if(!state.settings.pin) state.settings.pin = "1948";
+  if(!state.customQuestions || !state.customQuestions.length){
+    state.customQuestions = JSON.parse(JSON.stringify(QUESTION_BANK));
+  }
+  if(!state.myAttempts) state.myAttempts = [];
+  let session = null; // sessão de quiz em andamento (operador)
+  let pendingPrevious = null; // tentativa anterior detectada neste aparelho, aguardando confirmação
+  let timerInterval = null;
+  let clockInterval = null;
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  function getBank(){ return state.customQuestions; }
+  function getQuizSize(){ return Math.max(1, Math.min(state.settings.quizSize || DEFAULT_QUIZ_SIZE, getBank().length)); }
+  function getQTime(){ return state.settings.questionTime || DEFAULT_QUESTION_TIME; }
+  function toast(msg){
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 2500);
+  }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+  function fmtTime(sec){
+    const m = Math.floor(sec/60).toString().padStart(2,"0");
+    const s = Math.floor(sec%60).toString().padStart(2,"0");
+    return m+":"+s;
+  }
+  function getMonitorWhatsapp(){
+    try{
+      const params = new URLSearchParams(window.location.search);
+      const fromUrl = params.get("wa");
+      if(fromUrl && /^\d{10,14}$/.test(fromUrl)) return fromUrl;
+    }catch(e){}
+    return state.settings.monitorWhatsapp || MONITOR_WHATSAPP_DEFAULT;
+  }
+  function questionMaxPoints(weight){
+    return weight + Math.round(weight * 0.5);
+  }
+  function calcPoints(weight, correct, timeSpent, qTime){
+    if(!correct) return 0;
+    const ratio = Math.max(0, Math.min(1, (qTime - timeSpent) / qTime));
+    return weight + Math.round(ratio * weight * 0.5);
+  }
+  function startClock(){
+    const el = document.getElementById("clock");
+    function tick(){
+      const d = new Date();
+      el.textContent = d.toLocaleTimeString("pt-BR");
+    }
+    tick();
+    clearInterval(clockInterval);
+    clockInterval = setInterval(tick, 1000);
+  }
+  function setHeader(title, sub){
+    document.getElementById("headerTitle").textContent = title;
+    document.getElementById("headerSub").textContent = sub;
+  }
+
+  /* ======================= NAVEGAÇÃO / TELAS ======================= */
+  const main = document.getElementById("main");
+
+  function render(view){
+    clearInterval(timerInterval);
+    if(view === "home") renderHome();
+    else if(view === "op-welcome") renderOpWelcome();
+    else if(view === "op-warn-repeat") renderOpWarnRepeat();
+    else if(view === "op-rules") renderOpRules();
+    else if(view === "op-quiz") renderOpQuiz();
+    else if(view === "op-done") renderOpDone();
+    else if(view === "op-send") renderOpSend();
+    else if(view === "mon-pin") renderMonPin();
+    else if(view === "mon-panel") renderMonPanel();
+  }
+
+  function renderHome(){
+    setHeader("Desafio Fahrwerk","Escolha como deseja entrar");
+    main.innerHTML = `
+      <div class="card center">
+        <h1>🏆 Desafio Fahrwerk</h1>
+        <p class="mt8">Quiz interativo de conhecimento do setor. Segurança, Qualidade, Housekeeping e mais.</p>
+      </div>
+      <div class="card center" style="background:linear-gradient(135deg, var(--vw-blue-dark), var(--vw-blue));">
+        <p style="font-size:15px; font-weight:600; line-height:1.5; color:#ffffff;">💪 Quem sabe mais, produz melhor e trabalha mais seguro.<br>Mostre o que você sabe!</p>
+        <p class="mt8" style="font-size:13px; color:#ffe680; font-weight:600;">🍫 O melhor desempenho leva um chocolate de prêmio!</p>
+      </div>
+      <button class="btn btn-primary" id="btnOperador">📱 Sou Operador — Participar</button>
+      <button class="btn btn-outline" id="btnMonitor">📊 Sou Monitor — Painel de resultados</button>
+    `;
+    document.getElementById("btnOperador").addEventListener("click", ()=>render("op-welcome"));
+    document.getElementById("btnMonitor").addEventListener("click", ()=>render("mon-pin"));
+  }
+
+  function renderMonPin(){
+    setHeader("Painel do Monitor","Acesso restrito");
+    main.innerHTML = `
+      <div class="card center">
+        <h2>🔒 Acesso do Monitor</h2>
+        <p class="mt8">Digite o PIN para acessar o painel de resultados.</p>
+        <input type="text" inputmode="numeric" id="pinInput" placeholder="PIN" class="mt16" style="text-align:center; letter-spacing:4px; font-size:20px;" maxlength="12">
+        <button class="btn btn-primary mt16" id="btnPinGo">Entrar</button>
+        <button class="btn btn-outline mt8" id="btnPinBack">← Voltar</button>
+      </div>
+    `;
+    const input = document.getElementById("pinInput");
+    function tryEnter(){
+      if(input.value === state.settings.pin){
+        render("mon-panel");
+      }else{
+        toast("PIN incorreto");
+        input.value = "";
+        input.focus();
+      }
+    }
+    document.getElementById("btnPinGo").addEventListener("click", tryEnter);
+    input.addEventListener("keydown", (e)=>{ if(e.key === "Enter") tryEnter(); });
+    document.getElementById("btnPinBack").addEventListener("click", ()=>render("home"));
+  }
+
+  /* ---------- FLUXO OPERADOR ---------- */
+  function renderOpWelcome(){
+    setHeader("Desafio Fahrwerk","Identificação");
+    main.innerHTML = `
+      <div class="card">
+        <h2>Bem-vindo(a)!</h2>
+        <p>Informe seu nome para começar o desafio.</p>
+        <input type="text" id="opName" placeholder="Seu nome completo" class="mt12" maxlength="40">
+        <button class="btn btn-primary mt16" id="btnStart">Começar</button>
+      </div>
+    `;
+    document.getElementById("btnStart").addEventListener("click", ()=>{
+      const name = document.getElementById("opName").value.trim();
+      if(!name){ toast("Digite seu nome para continuar"); return; }
+      const key = normName(name);
+      const previous = (state.myAttempts||[]).filter(a => normName(a.name) === key);
+      session = { name, startedAt: Date.now(), answers: [], score:0, maxScore:0, current:0, localAttemptNumber: previous.length+1 };
+      if(previous.length > 0){
+        pendingPrevious = previous[previous.length-1];
+        render("op-warn-repeat");
+      }else{
+        render("op-rules");
+      }
+    });
+  }
+
+  function renderOpWarnRepeat(){
+    setHeader("Desafio Fahrwerk","Tentativa repetida detectada");
+    const p = pendingPrevious;
+    main.innerHTML = `
+      <div class="card">
+        <h2>⚠️ Este aparelho já respondeu antes</h2>
+        <p>Encontramos uma resposta anterior de <b>${escapeHtml(session.name)}</b> feita neste mesmo celular em ${new Date(p.date).toLocaleString("pt-BR")}, com <b>${p.score} pontos</b>.</p>
+        <p class="mt8">Lembrando: <b>não são aceitos envios extras</b> — apenas o primeiro envio oficial é aceito. Você pode responder novamente antes de enviar; a rodada que você efetivamente enviar é que vale. Mas atenção: em caso de empate de pontos com outro operador, <b>quem respondeu menos vezes antes de enviar leva vantagem no desempate</b>.</p>
+      </div>
+      <button class="btn btn-primary" id="btnWarnContinue">Continuar</button>
+      <button class="btn btn-outline" id="btnWarnCancel">Cancelar e voltar</button>
+    `;
+    document.getElementById("btnWarnContinue").addEventListener("click", ()=>render("op-rules"));
+    document.getElementById("btnWarnCancel").addEventListener("click", ()=>{ session = null; render("home"); });
+  }
+
+  function renderOpRules(){
+    setHeader("Desafio Fahrwerk","Regras do desafio");
+    main.innerHTML = `
+      <div class="card">
+        <h2>Como funciona</h2>
+        <p>• O quiz contém <b>${getQuizSize()} perguntas</b>.<br>
+        • Perguntas têm pesos diferentes conforme a importância para o processo.<br>
+        • Não é possível voltar para alterar respostas.<br>
+        • O gabarito não é exibido ao final.<br>
+        • O resultado será divulgado após todos concluírem.<br>
+        • Cada pergunta tem <b>${getQTime()} segundos</b>.<br>
+        • Quanto mais rápido você responder certo, <b>mais pontos de bônus</b> você ganha!<br>
+        • <b>Não são aceitos envios extras — apenas o primeiro envio oficial de cada operador é aceito.</b> Se você responder o quiz mais de uma vez antes de enviar, isso é identificado e usado como critério de desempate, se necessário.</p>
+      </div>
+      <button class="btn btn-green" id="btnGo">Iniciar desafio</button>
+    `;
+    document.getElementById("btnGo").addEventListener("click", ()=>{
+      const size = getQuizSize();
+      session.questions = shuffle(getBank()).slice(0, size).map(q=>{
+        const opts = q.options.map((t,i)=>({text:t, isCorrect:i===q.correct}));
+        return {...q, options: shuffle(opts)};
+      });
+      session.maxScore = session.questions.reduce((s,q)=>s+questionMaxPoints(q.weight),0);
+      render("op-quiz");
+    });
+  }
+
+  function renderOpQuiz(){
+    const q = session.questions[session.current];
+    if(!q){ render("op-done"); return; }
+    setHeader("Desafio Fahrwerk", session.name);
+    const pct = Math.round((session.current/session.questions.length)*100);
+    main.innerHTML = `
+      <div class="card">
+        <div class="qmeta">
+          <span>Pergunta ${session.current+1} de ${session.questions.length}</span>
+          <span class="score-pill">⭐ ${session.score} pts</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" style="width:${pct}%"></div></div>
+        <div class="qmeta mt8">
+          <span class="weight-tag">${q.category} · até ${questionMaxPoints(q.weight)} pts</span>
+          <span class="timer" id="timerEl">${getQTime()}s</span>
+        </div>
+        <div class="qtext">${q.text}</div>
+        <div id="optionsWrap"></div>
+      </div>
+    `;
+    const qTime = getQTime();
+    const qStartAt = Date.now();
+    const wrap = document.getElementById("optionsWrap");
+    const LETTERS = ["A","B","C","D","E","F"];
+    q.options.forEach((opt, idx)=>{
+      const b = document.createElement("button");
+      b.className = "option";
+      b.innerHTML = `<b>${LETTERS[idx] || (idx+1)})</b> ${escapeHtml(opt.text)}`;
+      b.dataset.idx = idx;
+      b.addEventListener("click", ()=>selectAnswer(q, idx, (Date.now()-qStartAt)/1000));
+      wrap.appendChild(b);
+    });
+
+    let timeLeft = qTime;
+    const timerEl = document.getElementById("timerEl");
+    timerInterval = setInterval(()=>{
+      timeLeft--;
+      timerEl.textContent = timeLeft+"s";
+      if(timeLeft <= 5) timerEl.classList.add("low");
+      if(timeLeft <= 0){
+        clearInterval(timerInterval);
+        selectAnswer(q, -1, qTime);
+      }
+    }, 1000);
+  }
+
+  function selectAnswer(q, idx, timeSpent){
+    clearInterval(timerInterval);
+    const correct = idx >= 0 && q.options[idx].isCorrect;
+    const qTime = getQTime();
+    const earned = calcPoints(q.weight, correct, timeSpent, qTime);
+    session.score += earned;
+    session.answers.push({id:q.id, category:q.category, weight:q.weight, correct: !!correct, timeSpent, answered: idx >= 0});
+    session.current++;
+    render("op-quiz");
+  }
+
+  function renderOpDone(){
+    const totalTime = Math.round((Date.now()-session.startedAt)/1000);
+    session.totalTime = totalTime;
+    state.myAttempts = state.myAttempts || [];
+    state.myAttempts.push({name: session.name, date: new Date().toISOString(), score: session.score});
+    save();
+    setHeader("Desafio Fahrwerk","Concluído");
+    const repeatNote = session.localAttemptNumber > 1
+      ? `<div class="warn-box mt12">ℹ️ Esta é sua ${session.localAttemptNumber}ª resposta neste aparelho. Só o envio que você mandar oficialmente conta — envios extras não são aceitos. Em caso de empate de pontos, isso será usado como desempate.</div>`
+      : "";
+    main.innerHTML = `
+      <div class="card center">
+        <h1>🎉 Parabéns, ${session.name}!</h1>
+        <p class="mt8">Você concluiu o Desafio Fahrwerk.</p>
+        <div class="kpi-grid">
+          <div class="kpi-card"><div class="val">${session.score}</div><div class="label">Pontos</div></div>
+          <div class="kpi-card"><div class="val">${fmtTime(totalTime)}</div><div class="label">Tempo total</div></div>
+        </div>
+        <p class="muted">O resultado oficial e o ranking serão divulgados após todos concluírem.</p>
+        ${repeatNote}
+      </div>
+      <div class="card center">
+        <p>🙏 <b>Muito obrigado por participar!</b><br>Seu tempo e dedicação ajudam a fortalecer a segurança, a qualidade e o desenvolvimento contínuo do nosso setor. Cada resposta conta para tornarmos o Fahrwerk cada vez melhor.</p>
+      </div>
+      <button class="btn btn-primary" id="btnSend">Enviar Quiz</button>
+    `;
+    document.getElementById("btnSend").addEventListener("click", ()=>openModal("modalConfirmSend"));
+  }
+
+  function renderOpSend(){
+    const payload = {
+      n: session.name,
+      s: session.score,
+      m: session.maxScore,
+      t: session.totalTime,
+      d: new Date().toISOString(),
+      a: session.answers,
+      la: session.localAttemptNumber || 1
+    };
+    const code = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    const waMsg = encodeURIComponent(
+      `Resultado Desafio Fahrwerk\nNome: ${session.name}\nPontos: ${session.score}/${session.maxScore}\nTempo: ${fmtTime(session.totalTime)}\nCODIGO: ${code}`
+    );
+    const waLink = `https://wa.me/${getMonitorWhatsapp()}?text=${waMsg}`;
+
+    setHeader("Desafio Fahrwerk","Envio concluído");
+    main.innerHTML = `
+      <div class="card center">
+        <h2>✅ Enviado!</h2>
+        <p class="mt8">Toque no botão abaixo para enviar seu código de resultado ao monitor via WhatsApp.</p>
+      </div>
+      <a class="btn btn-green" href="${waLink}" target="_blank" id="btnWa">📲 Enviar resultado via WhatsApp</a>
+      <div class="card mt12">
+        <p class="muted">Se preferir, copie o código e envie manualmente:</p>
+        <div class="code-box mt8" id="codeBox">${code}</div>
+        <button class="btn btn-secondary mt12" id="btnCopy">Copiar código</button>
+      </div>
+    `;
+    document.getElementById("btnCopy").addEventListener("click", ()=>{
+      navigator.clipboard.writeText(code).then(()=>toast("Código copiado!"));
+    });
+  }
+
+  /* ---------- FLUXO MONITOR ---------- */
+  function renderMonPanel(){
+    setHeader("Painel do Monitor","Desafio Fahrwerk");
+    const results = state.results || [];
+    const sorted = getRankingResults(results);
+    const multiAttemptCount = sorted.filter(r=>r.attemptsCount > 1).length;
+
+    main.innerHTML = `
+      <div class="card">
+        <h2>Importar resultado</h2>
+        <p class="muted">Cole aqui o código recebido pelo WhatsApp do operador.</p>
+        <textarea id="importCode" placeholder="Cole o código do resultado..." class="mt8"></textarea>
+        <button class="btn btn-primary mt12" id="btnImport">Importar resultado</button>
+      </div>
+
+      <div class="card">
+        <div class="row" style="align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <h2 style="margin:0;">🏆 Top 5</h2>
+          <span class="muted">${sorted.length} operador(es) único(s)</span>
+        </div>
+        <p class="muted mt8">🍫 Os 3 primeiros levam chocolate! Considera a melhor pontuação de cada operador. Em caso de empate de pontos e tempo, quem tentou <b>menos vezes</b> fica na frente.</p>
+        ${multiAttemptCount > 0 ? `<div class="warn-box mt8">ℹ️ ${multiAttemptCount} operador(es) responderam o quiz mais de uma vez antes de enviar — já considerado como critério de desempate, se necessário.</div>` : ""}
+        <div id="rankingWrap" class="mt12">${renderRankingTable(sorted)}</div>
+        <button class="btn btn-outline mt12" id="btnToggleFullRanking">Ver ranking completo (monitor)</button>
+        <div id="fullRankingWrap" class="hidden mt12">${renderFullRankingTable(results)}</div>
+      </div>
+
+      <div class="card">
+        <h2>📈 Resumo geral</h2>
+        ${(() => {
+          const summary = computeSummary(results);
+          if(!summary) return `<p class="muted">Sem dados suficientes ainda.</p>`;
+          return `
+            <div class="kpi-grid">
+              <div class="kpi-card"><div class="val">${summary.avgScore.toFixed(1)}</div><div class="label">Média de pontos</div></div>
+              <div class="kpi-card"><div class="val">${fmtTime(Math.round(summary.avgTime))}</div><div class="label">Média de tempo</div></div>
+              <div class="kpi-card"><div class="val">${summary.avgAnsweredPct.toFixed(0)}%</div><div class="label">Perguntas respondidas</div></div>
+              <div class="kpi-card"><div class="val">${summary.count}</div><div class="label">Envio(s) aceito(s)</div></div>
+            </div>
+            <p class="muted mt8">"Perguntas respondidas" mede o quanto os operadores respondem dentro do tempo, em vez de deixar o cronômetro zerar.</p>
+          `;
+        })()}
+      </div>
+
+      <div class="card">
+        <h2>📊 Estatísticas por pergunta</h2>
+        <div id="statsWrap" class="mt8">${renderStats(results)}</div>
+      </div>
+
+      <div class="card">
+        <h2>⚙️ Configurações do quiz</h2>
+        <div class="section-label">Seu número de WhatsApp (para receber os resultados)</div>
+        <input type="tel" inputmode="numeric" id="cfgWaNumber" value="${state.settings.monitorWhatsapp || ''}" placeholder="Ex: 5512999998888">
+        <p class="muted mt8">Formato: 55 + DDD + número, sem espaços, traços ou parênteses.</p>
+        <div class="section-label">Quantidade de perguntas por rodada</div>
+        <input type="text" inputmode="numeric" id="cfgQuizSize" value="${state.settings.quizSize}">
+        <p class="muted mt8">Banco atual tem ${getBank().length} pergunta(s) cadastrada(s). Não é possível pedir mais que isso.</p>
+        <div class="section-label">Tempo por pergunta (segundos)</div>
+        <input type="text" inputmode="numeric" id="cfgQTime" value="${state.settings.questionTime}">
+        <div class="section-label">PIN de acesso do monitor</div>
+        <input type="text" inputmode="numeric" id="cfgPin" value="${state.settings.pin}" maxlength="12">
+        <button class="btn btn-primary mt12" id="btnSaveCfg">Salvar configurações</button>
+
+        <div class="section-label">Link para distribuir aos operadores</div>
+        <p class="muted">Compartilhe este link (não o link genérico) para que o resultado já chegue com seu número pré-configurado, mesmo se o celular do operador nunca tiver acessado suas configurações.</p>
+        <div class="code-box mt8" id="opLinkBox">${buildOperatorLink()}</div>
+        <button class="btn btn-secondary mt12" id="btnCopyOpLink">Copiar link para operadores</button>
+      </div>
+
+      <div class="card">
+        <h2>📝 Gerenciar perguntas (${getBank().length})</h2>
+        <p class="muted">Edite o texto, as alternativas, a categoria e o peso de cada pergunta. Não há limite de 10 — adicione quantas quiser.</p>
+        <div id="questionsWrap" class="mt12">${renderQuestionManager()}</div>
+        <button class="btn btn-green mt12" id="btnAddQuestion">+ Nova pergunta</button>
+      </div>
+
+      <div class="card">
+        <h2>Gabarito completo</h2>
+        <button class="btn btn-outline" id="btnToggleGab">Mostrar / ocultar gabarito (admin)</button>
+        <div id="gabWrap" class="hidden mt12">${renderGabarito()}</div>
+        <div class="row mt12">
+          <button class="btn btn-secondary" id="btnCopyGab">📋 Copiar gabarito</button>
+          <button class="btn btn-green" id="btnSendGab">📲 Enviar por WhatsApp</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-dark" id="btnExportCsv">⇩ Exportar Excel (CSV)</button>
+        <button class="btn btn-secondary" id="btnOpenBackup">💾 Backup</button>
+      </div>
+      <button class="btn btn-outline" id="btnHome">← Voltar ao início</button>
+    `;
+
+    document.getElementById("btnImport").addEventListener("click", ()=>{
+      const raw = document.getElementById("importCode").value.trim();
+      if(!raw){ toast("Cole um código válido"); return; }
+      try{
+        const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
+        const jaExiste = (state.results||[]).some(r=> normName(r.n) === normName(decoded.n));
+        if(jaExiste){
+          toast(`🚫 Envio rejeitado — ${decoded.n} já possui um envio oficial registrado. Envios extras não são aceitos.`);
+          return;
+        }
+        state.results = state.results || [];
+        state.results.push(decoded);
+        save();
+        toast(`Resultado de ${decoded.n} importado às ${new Date().toLocaleTimeString("pt-BR")}`);
+        render("mon-panel");
+      }catch(e){
+        toast("Código inválido — verifique e tente novamente");
+      }
+    });
+
+    document.getElementById("btnToggleFullRanking").addEventListener("click", ()=>{
+      document.getElementById("fullRankingWrap").classList.toggle("hidden");
+    });
+    document.getElementById("fullRankingWrap").addEventListener("click", (e)=>{
+      const delBtn = e.target.closest("[data-del-result]");
+      if(!delBtn) return;
+      const [nameEnc, dateEnc] = delBtn.dataset.delResult.split("|");
+      const name = decodeURIComponent(nameEnc), date = decodeURIComponent(dateEnc);
+      if(!confirm(`Excluir o resultado de "${name}"? Esta ação não pode ser desfeita.`)) return;
+      state.results = (state.results||[]).filter(r => !(r.n === name && r.d === date));
+      save();
+      toast(`Resultado de ${name} excluído`);
+      render("mon-panel");
+    });
+    document.getElementById("btnToggleGab").addEventListener("click", ()=>{
+      document.getElementById("gabWrap").classList.toggle("hidden");
+    });
+    document.getElementById("btnCopyGab").addEventListener("click", ()=>{
+      navigator.clipboard.writeText(gabaritoAsText()).then(()=>toast("Gabarito copiado!"));
+    });
+    document.getElementById("btnSendGab").addEventListener("click", ()=>{
+      const msg = encodeURIComponent(gabaritoAsText());
+      window.open(`https://wa.me/?text=${msg}`, "_blank");
+    });
+    document.getElementById("btnExportCsv").addEventListener("click", exportCsv);
+    document.getElementById("btnOpenBackup").addEventListener("click", ()=>{
+      openModal("modalBackup");
+      updateStorageInfo();
+    });
+    document.getElementById("btnHome").addEventListener("click", ()=>render("home"));
+
+    document.getElementById("btnSaveCfg").addEventListener("click", ()=>{
+      const size = parseInt(document.getElementById("cfgQuizSize").value, 10);
+      const time = parseInt(document.getElementById("cfgQTime").value, 10);
+      const pin = document.getElementById("cfgPin").value.trim();
+      const wa = document.getElementById("cfgWaNumber").value.replace(/\D/g,"");
+      if(!size || size < 1){ toast("Informe uma quantidade de perguntas válida"); return; }
+      if(!time || time < 5){ toast("Informe um tempo mínimo de 5 segundos"); return; }
+      if(!pin || pin.length < 4){ toast("O PIN deve ter ao menos 4 dígitos"); return; }
+      if(!wa || wa.length < 10){ toast("Informe um número de WhatsApp válido (com DDI e DDD)"); return; }
+      state.settings.quizSize = Math.min(size, getBank().length);
+      state.settings.questionTime = time;
+      state.settings.pin = pin;
+      state.settings.monitorWhatsapp = wa;
+      save();
+      toast("Configurações salvas");
+      render("mon-panel");
+    });
+
+    document.getElementById("btnCopyOpLink").addEventListener("click", ()=>{
+      navigator.clipboard.writeText(buildOperatorLink()).then(()=>toast("Link copiado!"));
+    });
+
+    document.getElementById("btnAddQuestion").addEventListener("click", ()=>{
+      state.customQuestions.push({
+        id: "q_"+Date.now(),
+        category: "Nova categoria",
+        weight: 10,
+        text: "",
+        options: ["", "", ""],
+        correct: 0
+      });
+      save();
+      render("mon-panel");
+    });
+
+    document.getElementById("questionsWrap").addEventListener("click", (e)=>{
+      const saveBtn = e.target.closest("[data-save-q]");
+      const delBtn = e.target.closest("[data-del-q]");
+      if(saveBtn){
+        const idx = parseInt(saveBtn.dataset.saveQ, 10);
+        const q = state.customQuestions[idx];
+        const card = document.getElementById("qcard-"+idx);
+        q.category = card.querySelector("[data-f=category]").value.trim() || "Geral";
+        q.weight = parseInt(card.querySelector("[data-f=weight]").value, 10);
+        q.text = card.querySelector("[data-f=text]").value.trim();
+        q.options = Array.from(card.querySelectorAll("[data-f=option]")).map(i=>i.value.trim());
+        q.correct = parseInt(card.querySelector("[data-f=correct]:checked").value, 10);
+        if(!q.text || q.options.some(o=>!o)){ toast("Preencha o texto e as 3 alternativas"); return; }
+        save();
+        toast("Pergunta salva");
+        render("mon-panel");
+      } else if(delBtn){
+        const idx = parseInt(delBtn.dataset.delQ, 10);
+        if(state.customQuestions.length <= 1){ toast("É necessário manter ao menos 1 pergunta"); return; }
+        if(!confirm("Remover esta pergunta do banco?")) return;
+        state.customQuestions.splice(idx, 1);
+        state.settings.quizSize = Math.min(state.settings.quizSize, state.customQuestions.length);
+        save();
+        toast("Pergunta removida");
+        render("mon-panel");
+      }
+    });
+  }
+
+  function renderQuestionManager(){
+    const LETTERS = ["A","B","C","D","E","F"];
+    return getBank().map((q, idx)=>{
+      const weightOpts = WEIGHT_OPTIONS.map(w=>
+        `<option value="${w.v}" ${q.weight===w.v?"selected":""}>${w.label}</option>`
+      ).join("");
+      const optionInputs = q.options.map((opt, oi)=>`
+        <div class="row" style="align-items:center; margin-bottom:6px;">
+          <input type="radio" name="correct-${idx}" data-f="correct" value="${oi}" ${q.correct===oi?"checked":""} style="width:18px; flex:none;">
+          <span style="font-weight:700; color:var(--vw-blue-dark); flex:none; width:20px;">${LETTERS[oi] || (oi+1)})</span>
+          <input type="text" data-f="option" value="${escapeHtml(opt)}" placeholder="Alternativa ${LETTERS[oi] || (oi+1)}">
+        </div>
+      `).join("");
+      return `
+        <div class="card" style="background:#f7f9fc; padding:14px; margin-bottom:12px;" id="qcard-${idx}">
+          <div class="section-label" style="margin-top:0; color:var(--vw-blue); font-size:13px;">Pergunta Q${idx+1}</div>
+          <div class="row">
+            <div>
+              <div class="section-label" style="margin-top:0;">Categoria</div>
+              <input type="text" data-f="category" value="${escapeHtml(q.category)}">
+            </div>
+            <div>
+              <div class="section-label" style="margin-top:0;">Peso</div>
+              <select data-f="weight" style="width:100%; padding:12px; border-radius:10px; border:1.5px solid #d5dae5;">${weightOpts}</select>
+            </div>
+          </div>
+          <div class="section-label">Pergunta</div>
+          <textarea data-f="text" placeholder="Texto da pergunta">${escapeHtml(q.text)}</textarea>
+          <div class="section-label">Alternativas (marque a correta)</div>
+          ${optionInputs}
+          <div class="row mt12">
+            <button class="btn btn-primary" data-save-q="${idx}">Salvar</button>
+            <button class="btn btn-red" data-del-q="${idx}">Remover</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderFullRankingTable(results){
+    if(!results.length) return `<p class="muted">Nenhum resultado importado ainda.</p>`;
+    const sortedAll = results.slice().sort((a,b)=> b.s-a.s || a.t-b.t || (a.la||1)-(b.la||1));
+    let rows = sortedAll.map((r,i)=>{
+      const cls = i===0?"gold":i===1?"silver":i===2?"bronze":"";
+      const la = r.la || 1;
+      const premio = i<3 ? " 🍫" : "";
+      const attemptTag = la > 1
+        ? ` <span style="color:#888; font-weight:600;">🔁 respondeu ${la}x antes de enviar</span>`
+        : "";
+      return `<tr>
+        <td><span class="rank-badge ${cls}">${i+1}</span></td>
+        <td>${escapeHtml(r.n)}${premio}${attemptTag}</td>
+        <td>${r.s}/${r.m}</td>
+        <td>${fmtTime(r.t)}</td>
+        <td>${new Date(r.d).toLocaleDateString("pt-BR")} <span class="muted">${new Date(r.d).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</span></td>
+        <td><button class="btn btn-red" style="padding:6px 10px; font-size:12px;" data-del-result="${encodeURIComponent(r.n)}|${encodeURIComponent(r.d)}">🗑️</button></td>
+      </tr>`;
+    }).join("");
+    return `<p class="muted mt8">Cada operador tem apenas 1 envio oficial aceito. A coluna de nome mostra quantas vezes ele respondeu o quiz antes de enviar (usado só para desempate).</p>
+      <table class="mt8"><thead><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th><th>Data/Hora</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function buildOperatorLink(){
+    const base = window.location.origin + window.location.pathname;
+    const wa = state.settings.monitorWhatsapp || MONITOR_WHATSAPP_DEFAULT;
+    return `${base}?wa=${wa}`;
+  }
+  function renderRankingTable(sorted){
+    if(!sorted.length) return `<p class="muted">Nenhum resultado importado ainda.</p>`;
+    const top5 = sorted.slice(0, 5);
+    let rows = top5.map((r,i)=>{
+      const cls = i===0?"gold":i===1?"silver":i===2?"bronze":"";
+      const premio = i<3 ? " 🍫" : "";
+      const attemptsNote = r.attemptsCount > 1 ? ` <span class="muted">(${r.attemptsCount} tentativas)</span>` : "";
+      return `<tr>
+        <td><span class="rank-badge ${cls}">${i+1}</span></td>
+        <td>${escapeHtml(r.n)}${premio}${attemptsNote}</td>
+        <td>${r.s}/${r.m}</td>
+        <td>${fmtTime(r.t)}</td>
+      </tr>`;
+    }).join("");
+    return `<table><thead><tr><th>#</th><th>Nome</th><th>Pontos</th><th>Tempo</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function computeSummary(results){
+    if(!results.length) return null;
+    const avgScore = results.reduce((s,r)=> s + r.s, 0) / results.length;
+    const avgTime = results.reduce((s,r)=> s + r.t, 0) / results.length;
+    const avgAnsweredPct = results.reduce((sum,r)=>{
+      const a = r.a || [];
+      if(!a.length) return sum;
+      const answeredCount = a.filter(x=> x.answered !== false).length;
+      return sum + (answeredCount / a.length) * 100;
+    }, 0) / results.length;
+    return { avgScore, avgTime, avgAnsweredPct, count: results.length };
+  }
+
+  function renderStats(results){
+    if(!results.length) return `<p class="muted">Sem dados suficientes ainda.</p>`;
+    const stats = {};
+    getBank().forEach((q, idx)=> stats[q.id] = {num: idx+1, category:q.category, text:q.text, correct:0, total:0});
+    results.forEach(r=>{
+      (r.a||[]).forEach(ans=>{
+        if(!stats[ans.id]) return;
+        stats[ans.id].total++;
+        if(ans.correct) stats[ans.id].correct++;
+      });
+    });
+    let rows = Object.entries(stats).map(([id, s])=>{
+      const pct = s.total ? Math.round((s.correct/s.total)*100) : 0;
+      const color = pct>=70?"var(--green)":pct>=40?"var(--yellow)":"var(--red)";
+      return `<div class="bar-row" title="${escapeHtml(s.text)}">
+        <div class="bar-label">Q${s.num} · ${escapeHtml(s.category)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${color};"></div></div>
+        <div class="bar-pct">${pct}%</div>
+      </div>`;
+    }).join("");
+    const hardest = Object.values(stats)
+      .filter(s=>s.total>0)
+      .sort((a,b)=> (a.correct/a.total) - (b.correct/b.total))
+      .slice(0,3)
+      .map(s=> `Q${s.num} · ${s.category} (${Math.round((s.correct/s.total)*100)}% acerto)`);
+    return rows + (hardest.length ? `<div class="warn-box mt12">⚠️ Perguntas com maior dificuldade: ${hardest.join(", ")}</div>` : "");
+  }
+
+  function renderGabarito(){
+    const LETTERS = ["A","B","C","D","E","F"];
+    return getBank().map((q, idx)=>{
+      const correctText = q.options[q.correct];
+      const letter = LETTERS[q.correct] || (q.correct+1);
+      return `<div class="gabarito-item"><b>Q${idx+1} · ${escapeHtml(q.category)}</b> (${q.weight} pts) — ${escapeHtml(q.text)}<br>Resposta correta: <b>${letter}) ${escapeHtml(correctText)}</b></div>`;
+    }).join("");
+  }
+
+  function gabaritoAsText(){
+    const LETTERS = ["A","B","C","D","E","F"];
+    const linhas = getBank().map((q, i)=>{
+      const letter = LETTERS[q.correct] || (q.correct+1);
+      return `${i+1}. [${q.category} · ${q.weight} pts] ${q.text}\nResposta correta: ${letter}) ${q.options[q.correct]}`;
+    });
+    return `📋 GABARITO — Desafio Fahrwerk\n\n${linhas.join("\n\n")}`;
+  }
+
+  function normName(n){ return (n||"").trim().toLowerCase(); }
+
+  // Ranking oficial: considera a MELHOR tentativa de cada operador.
+  // Em caso de empate de pontos e tempo, quem tentou MENOS VEZES fica na frente.
+  // Cada operador tem apenas 1 envio oficial aceito (envios extras são rejeitados na importação).
+  // Em caso de empate de pontos e tempo, quem respondeu MENOS VEZES antes de enviar (campo "la") fica na frente.
+  function getRankingResults(results){
+    return results
+      .map(r => ({...r, attemptsCount: r.la || 1}))
+      .sort((a,b)=> b.s-a.s || a.t-b.t || a.attemptsCount-b.attemptsCount);
+  }
+
+  function exportCsv(){
+    const results = state.results || [];
+    if(!results.length){ toast("Nada para exportar"); return; }
+    let csv = "Nome;Pontos;Pontuacao Maxima;Tempo (s);Data\n";
+    results.forEach(r=>{
+      csv += `${r.n};${r.s};${r.m};${r.t};${r.d}\n`;
+    });
+    downloadFile("desafio_fahrwerk_resultados.csv", csv);
+    toast("CSV exportado");
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  /* ======================= MODAIS ======================= */
+  function openModal(id){ document.getElementById(id).classList.add("open"); }
+  function closeModal(id){ document.getElementById(id).classList.remove("open"); }
+
+  document.querySelectorAll("[data-close]").forEach(btn=>{
+    btn.addEventListener("click", ()=> closeModal(btn.dataset.close));
+  });
+  document.getElementById("btnConfirmSend").addEventListener("click", ()=>{
+    closeModal("modalConfirmSend");
+    render("op-send");
+  });
+
+  /* ======================= BACKUP MODAL (padrão Fahrwerk) ======================= */
+  function updateStorageInfo(){
+    const bytes = new Blob([JSON.stringify(state)]).size;
+    const kb = (bytes/1024).toFixed(1);
+    const pct = Math.min(100, Math.round((bytes/ (5*1024*1024)) * 100));
+    document.getElementById("storageBar").style.width = Math.max(pct,2)+"%";
+    const hasBackup = localStorage.getItem(STORAGE_KEY+"_lastbackup");
+    document.getElementById("storageInfo").textContent =
+      `${kb} KB usados` + (hasBackup ? ` · último backup: ${hasBackup}` : " · ⚠️ nenhum backup realizado ainda");
+  }
+
+  function downloadFile(filename, content, mime){
+    const blob = new Blob([content], {type: mime || "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("btnExportJson").addEventListener("click", ()=>{
+    downloadFile("fahrwerk_quiz_backup.json", JSON.stringify(state, null, 2));
+    localStorage.setItem(STORAGE_KEY+"_lastbackup", new Date().toLocaleString("pt-BR"));
+    toast("Backup .json gerado às "+new Date().toLocaleTimeString("pt-BR"));
+    updateStorageInfo();
+  });
+  document.getElementById("btnExportDevice").addEventListener("click", ()=>{
+    localStorage.setItem(STORAGE_KEY+"_devicebackup", JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY+"_lastbackup", new Date().toLocaleString("pt-BR"));
+    toast("Salvo no dispositivo às "+new Date().toLocaleTimeString("pt-BR"));
+    updateStorageInfo();
+  });
+  document.getElementById("btnRestoreFile").addEventListener("click", ()=>{
+    document.getElementById("fileRestore").click();
+  });
+  document.getElementById("fileRestore").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const data = JSON.parse(ev.target.result);
+        state = data;
+        save();
+        toast("Restaurado de arquivo .json");
+        closeModal("modalBackup");
+        render("mon-panel");
+      }catch(err){ toast("Arquivo inválido"); }
+    };
+    reader.readAsText(file);
+  });
+  document.getElementById("btnRestoreDevice").addEventListener("click", ()=>{
+    const raw = localStorage.getItem(STORAGE_KEY+"_devicebackup");
+    if(!raw){ toast("Nenhum backup salvo no dispositivo"); return; }
+    try{
+      state = JSON.parse(raw);
+      save();
+      toast("Restaurado do dispositivo");
+      closeModal("modalBackup");
+      render("mon-panel");
+    }catch(err){ toast("Backup corrompido"); }
+  });
+
+  /* ======================= INICIALIZAÇÃO ======================= */
+  startClock();
+  render("home");
+
+})();
+</script>
+</body>
+</html>
